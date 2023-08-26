@@ -3,7 +3,7 @@ import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import { useNavigate } from "react-router-dom";
 
-import Logo from "assets/images/vacation.png";
+import VacaLogo from "assets/images/vaca-logo.png";
 import styles from "./Login.module.scss";
 import LoginWithGoogle from "./LoginWithGoogle";
 import { useAppDispatch } from "hooks/hooks";
@@ -16,6 +16,13 @@ const Login: FC = () => {
   const [users, setUsers] = useState<UserInfo[]>([]);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+
+  useEffect(() => {
+    getUsers().then((users) => {
+      console.log("Users", users);
+      setUsers(users);
+    });
+  }, []);
 
   const handleSignIn = async () => {
     if (!email) {
@@ -39,17 +46,21 @@ const Login: FC = () => {
 
   return (
     <div className={styles.login}>
-      <img className={styles.logo} src={Logo} alt="logo" />
+      <img className={styles.logo} src={VacaLogo} alt="logo" />
+
 
       <p className={styles.adviceLine}>
-        Login with Google if you invited by your manager
+        {/* Login with Google if you invited by your manager */}
+        Login with Google in order to start
       </p>
 
       <div className={styles.buttons}>
         <LoginWithGoogle users={users} />
       </div>
 
-      <p className={styles.adviceLine}>
+
+{/* uncomment or not  */}
+      {/* <p className={styles.adviceLine}>
         Login with your email if you already in the organization.
       </p>
 
@@ -64,7 +75,12 @@ const Login: FC = () => {
           setEmail(e.target.value);
         }}
         required
-      />
+      /> */}
+
+
+
+
+
       {/* functionality for POST MVP */}
       {/* <TextField
         id="standard-password-input"
@@ -78,11 +94,13 @@ const Login: FC = () => {
           setPassword(e.target.value);
         }}
       /> */}
-      <div className={styles.buttons}>
+
+
+      {/* <div className={styles.buttons}>
         <Button variant="contained" onClick={handleSignIn}>
           Login
         </Button>
-      </div>
+      </div> */}
 
       {/* <p className={styles.signUpLine}>
         Don't have account yet? <a href="#">Create one</a>

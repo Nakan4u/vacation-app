@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { UserInfo, setUser } from "store/userSlice";
 import { useAppDispatch } from "hooks/hooks";
 import { BASE_API_URL, createUser } from "services/api";
+import { saveUserPermanently } from "services/utils";
 
 const LoginWithGoogle: FC<{ users: UserInfo[] }> = ({ users }) => {
   const navigate = useNavigate();
@@ -24,6 +25,7 @@ const LoginWithGoogle: FC<{ users: UserInfo[] }> = ({ users }) => {
       )
         .then((res: any) => res.json())
         .then((data) => {
+          console.log("Data", data);
           const userData: UserInfo = {
             firstName: data.given_name,
             lastName: data.family_name,
@@ -32,25 +34,32 @@ const LoginWithGoogle: FC<{ users: UserInfo[] }> = ({ users }) => {
             phoneNumber: "911911", // user will provide it later
             role: "WORKER",
             organization: `${BASE_API_URL}/organizations/1`, // "ITstep",
-            _links: data._links,
+            _links: data._links, // not returns for the first time
           };
           // check if user exists in DB
           const userFromDB = users.find(
             (user: UserInfo) => user.email === data.email,
           );
+
           if (userFromDB) {
-            return userFromDB;
+            handleUser(userFromDB);
           } else {
-            createUser(userData);
-            return userData;
+            createUser(userData).then((newUser) => {
+              handleUser(newUser);
+            });
           }
-        })
-        .then((data: UserInfo) => {
-          dispatch(setUser(data));
-          navigate("/dashboard");
         })
         .catch((err: any) => console.log(err));
     }
+  };
+
+  const handleUser = function (userData: any) {
+    saveUserPermanently(userData);
+    dispatch(setUser(userData));
+
+    const startPage =
+      userData.role === "MANAGER" ? "/organization" : "/dashboard";
+    navigate(startPage);
   };
 
   const login = useGoogleLogin({

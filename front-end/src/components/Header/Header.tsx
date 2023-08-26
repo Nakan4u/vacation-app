@@ -12,6 +12,7 @@ import { googleLogout } from "@react-oauth/google";
 import { deleteUser } from "store/userSlice";
 import { getDataByUrl } from "services/api";
 import { clearVacations } from "store/vacationSlice";
+import { deleteLocalUser } from "services/utils";
 
 const Header: FC = () => {
   const [organization, setOrganization] = useState<{
@@ -49,10 +50,13 @@ const Header: FC = () => {
     dispatch(clearVacations());
     googleLogout();
     navigate("/login");
+    deleteLocalUser();
   };
 
   const handleOrganization = () => {
-    navigate("/organization");
+    if (user.role === 'MANAGER') {
+      navigate("/organization");
+    }
   };
 
   return (
